@@ -6,11 +6,34 @@ import com.footwear.service.ProductService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.util.List;
 
 public class ProductManagementPanel extends JPanel {
+
+    private static final Color BACKGROUND_COLOR =
+            new Color(245, 247, 250);
+
+    private static final Color HEADER_COLOR =
+            new Color(36, 59, 100);
+
+    private static final Color HEADER_BORDER_COLOR =
+            new Color(52, 79, 125);
+
+    private static final Color ROW_COLOR =
+            Color.WHITE;
+
+    private static final Color ALTERNATE_ROW_COLOR =
+            new Color(247, 249, 252);
+
+    private static final Color SELECTED_ROW_COLOR =
+            new Color(226, 237, 255);
+
+    private static final Color TEXT_COLOR =
+            new Color(45, 52, 65);
 
     private final ProductService productService;
     private final DefaultTableModel tableModel;
@@ -18,34 +41,34 @@ public class ProductManagementPanel extends JPanel {
     private final JTextField searchField;
 
     public ProductManagementPanel() {
+
         productService = new ProductService();
 
         setLayout(new BorderLayout(0, 15));
-        setBackground(new Color(245, 247, 250));
+        setBackground(BACKGROUND_COLOR);
         setBorder(new EmptyBorder(25, 25, 25, 25));
 
         // Header
-        JPanel header = new JPanel(new BorderLayout(10, 10));
+        JPanel header = new JPanel(
+                new BorderLayout(10, 10));
         header.setOpaque(false);
 
         JLabel title = new JLabel("Product Management");
-        title.setFont(new Font("SansSerif", Font.BOLD, 26));
+        title.setFont(
+                new Font("SansSerif", Font.BOLD, 26));
         title.setForeground(new Color(35, 45, 65));
 
         JButton addButton = createActionButton(
                 "+ Add Product",
-                new Color(35, 139, 85)
-        );
+                new Color(35, 139, 85));
 
         JButton refreshButton = createActionButton(
                 "Refresh",
-                new Color(65, 95, 145)
-        );
+                new Color(65, 95, 145));
 
         JButton editButton = createActionButton(
                 "Edit Product",
-                new Color(75, 95, 125)
-        );
+                new Color(75, 95, 125));
 
         JPanel actions = new JPanel(
                 new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -58,7 +81,7 @@ public class ProductManagementPanel extends JPanel {
         header.add(title, BorderLayout.WEST);
         header.add(actions, BorderLayout.EAST);
 
-        // Product table
+        // Product table columns
         String[] columns = {
                 "ID",
                 "Product Code",
@@ -70,39 +93,72 @@ public class ProductManagementPanel extends JPanel {
 
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(
+                    int row, int column) {
                 return false;
             }
         };
 
         productTable = new JTable(tableModel);
-        productTable.setRowHeight(30);
+
+        // Basic table settings
+        productTable.setRowHeight(36);
         productTable.setFont(
                 new Font("SansSerif", Font.PLAIN, 13));
+        productTable.setForeground(TEXT_COLOR);
+        productTable.setBackground(ROW_COLOR);
         productTable.setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION);
         productTable.setAutoCreateRowSorter(true);
         productTable.setFillsViewportHeight(true);
 
-        productTable.getTableHeader().setFont(
-                new Font("SansSerif", Font.BOLD, 12));
-        productTable.getTableHeader().setBackground(
-                new Color(225, 232, 242));
+        productTable.setShowVerticalLines(false);
+        productTable.setShowHorizontalLines(true);
+        productTable.setGridColor(
+                new Color(232, 236, 242));
+        productTable.setIntercellSpacing(
+                new Dimension(0, 1));
 
-        JScrollPane scrollPane = new JScrollPane(productTable);
+        productTable.setSelectionBackground(
+                SELECTED_ROW_COLOR);
+        productTable.setSelectionForeground(
+                new Color(30, 64, 120));
+
+        productTable.setRowMargin(1);
+
+        // Improve column alignment and widths.
+        productTable.setAutoResizeMode(
+                JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+
+        // Apply custom header and row styling.
+        styleProductTable();
+
+        // Scroll pane
+        JScrollPane scrollPane =
+                new JScrollPane(productTable);
+
         scrollPane.setBorder(
                 BorderFactory.createLineBorder(
-                        new Color(225, 230, 237)));
+                        new Color(220, 226, 235)));
+
+        scrollPane.getViewport().setBackground(
+                Color.WHITE);
+
+        scrollPane.getVerticalScrollBar()
+                .setUnitIncrement(16);
 
         // Search controls
         searchField = new JTextField(22);
         searchField.setToolTipText(
                 "Search product code or name");
+        searchField.setFont(
+                new Font("SansSerif", Font.PLAIN, 13));
+        searchField.setPreferredSize(
+                new Dimension(250, 36));
 
         JButton searchButton = createActionButton(
                 "Search",
-                new Color(65, 95, 145)
-        );
+                new Color(65, 95, 145));
 
         JPanel searchPanel = new JPanel(
                 new FlowLayout(FlowLayout.LEFT, 8, 0));
@@ -110,15 +166,18 @@ public class ProductManagementPanel extends JPanel {
 
         JLabel searchLabel = new JLabel("Search:");
         searchLabel.setFont(
-                new Font("SansSerif", Font.PLAIN, 13));
+                new Font("SansSerif", Font.BOLD, 13));
+        searchLabel.setForeground(TEXT_COLOR);
 
         searchPanel.add(searchLabel);
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
         // Top section
-        JPanel top = new JPanel(new BorderLayout(0, 15));
+        JPanel top = new JPanel(
+                new BorderLayout(0, 15));
         top.setOpaque(false);
+
         top.add(header, BorderLayout.NORTH);
         top.add(searchPanel, BorderLayout.CENTER);
 
@@ -126,27 +185,195 @@ public class ProductManagementPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         // Button actions
-        refreshButton.addActionListener(e -> loadProducts());
+        refreshButton.addActionListener(
+                e -> loadProducts());
 
-        searchButton.addActionListener(e -> searchProducts());
+        searchButton.addActionListener(
+                e -> searchProducts());
 
-        searchField.addActionListener(e -> searchProducts());
+        searchField.addActionListener(
+                e -> searchProducts());
 
         addButton.addActionListener(e -> {
-            Window owner = SwingUtilities.getWindowAncestor(this);
+            Window owner =
+                    SwingUtilities.getWindowAncestor(this);
 
             AddProductDialog dialog =
-                    new AddProductDialog(owner, productService);
+                    new AddProductDialog(
+                            owner, productService);
 
             dialog.setVisible(true);
 
             loadProducts();
         });
 
-        editButton.addActionListener(e -> editSelectedProduct());
+        editButton.addActionListener(
+                e -> editSelectedProduct());
 
         // Initial table load
         loadProducts();
+    }
+
+    /**
+     * Applies custom styling to the product table.
+     */
+    private void styleProductTable() {
+
+        JTableHeader header =
+                productTable.getTableHeader();
+
+        header.setPreferredSize(
+                new Dimension(0, 44));
+        header.setFont(
+                new Font("SansSerif", Font.BOLD, 12));
+        header.setBackground(HEADER_COLOR);
+        header.setForeground(Color.WHITE);
+        header.setOpaque(true);
+        header.setReorderingAllowed(false);
+        header.setResizingAllowed(true);
+        header.setBorder(
+                BorderFactory.createMatteBorder(
+                        0, 0, 2, 0,
+                        HEADER_BORDER_COLOR));
+
+        // Custom header renderer ensures the colors
+        // are applied consistently across look and feels.
+        DefaultTableCellRenderer headerRenderer =
+                new DefaultTableCellRenderer() {
+
+                    @Override
+                    public Component getTableCellRendererComponent(
+                            JTable table,
+                            Object value,
+                            boolean isSelected,
+                            boolean hasFocus,
+                            int row,
+                            int column) {
+
+                        super.getTableCellRendererComponent(
+                                table,
+                                value,
+                                false,
+                                false,
+                                row,
+                                column);
+
+                        setFont(new Font(
+                                "SansSerif",
+                                Font.BOLD,
+                                12));
+
+                        setForeground(Color.WHITE);
+                        setBackground(HEADER_COLOR);
+                        setOpaque(true);
+
+                        setHorizontalAlignment(
+                                SwingConstants.LEFT);
+
+                        setVerticalAlignment(
+                                SwingConstants.CENTER);
+
+                        setBorder(
+                                BorderFactory.createEmptyBorder(
+                                        0, 12, 0, 8));
+
+                        return this;
+                    }
+                };
+
+        header.setDefaultRenderer(headerRenderer);
+
+        // Alternating row colors and readable cell padding.
+        DefaultTableCellRenderer cellRenderer =
+                new DefaultTableCellRenderer() {
+
+                    @Override
+                    public Component getTableCellRendererComponent(
+                            JTable table,
+                            Object value,
+                            boolean isSelected,
+                            boolean hasFocus,
+                            int row,
+                            int column) {
+
+                        super.getTableCellRendererComponent(
+                                table,
+                                value,
+                                isSelected,
+                                hasFocus,
+                                row,
+                                column);
+
+                        setFont(new Font(
+                                "SansSerif",
+                                Font.PLAIN,
+                                13));
+
+                        setBorder(
+                                BorderFactory.createEmptyBorder(
+                                        0, 12, 0, 8));
+
+                        if (isSelected) {
+                            setBackground(SELECTED_ROW_COLOR);
+                            setForeground(
+                                    new Color(30, 64, 120));
+                        } else {
+                            if (row % 2 == 0) {
+                                setBackground(ROW_COLOR);
+                            } else {
+                                setBackground(
+                                        ALTERNATE_ROW_COLOR);
+                            }
+
+                            setForeground(TEXT_COLOR);
+                        }
+
+                        return this;
+                    }
+                };
+
+        productTable.setDefaultRenderer(
+                Object.class, cellRenderer);
+
+        // Center the ID and Active columns.
+        DefaultTableCellRenderer centeredRenderer =
+                new DefaultTableCellRenderer();
+
+        centeredRenderer.setHorizontalAlignment(
+                SwingConstants.CENTER);
+
+        productTable.getColumnModel()
+                .getColumn(0)
+                .setCellRenderer(centeredRenderer);
+
+        productTable.getColumnModel()
+                .getColumn(5)
+                .setCellRenderer(centeredRenderer);
+
+        // Preferred column widths.
+        productTable.getColumnModel()
+                .getColumn(0)
+                .setPreferredWidth(55);
+
+        productTable.getColumnModel()
+                .getColumn(1)
+                .setPreferredWidth(125);
+
+        productTable.getColumnModel()
+                .getColumn(2)
+                .setPreferredWidth(210);
+
+        productTable.getColumnModel()
+                .getColumn(3)
+                .setPreferredWidth(130);
+
+        productTable.getColumnModel()
+                .getColumn(4)
+                .setPreferredWidth(130);
+
+        productTable.getColumnModel()
+                .getColumn(5)
+                .setPreferredWidth(75);
     }
 
     /**
@@ -162,7 +389,8 @@ public class ProductManagementPanel extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
 
-                Graphics2D g2 = (Graphics2D) g.create();
+                Graphics2D g2 =
+                        (Graphics2D) g.create();
 
                 g2.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,
@@ -176,7 +404,7 @@ public class ProductManagementPanel extends JPanel {
                     buttonColor = background.brighter();
                 }
 
-                // Draw button background.
+                // Draw rounded button background.
                 g2.setColor(buttonColor);
                 g2.fillRoundRect(
                         0,
@@ -184,14 +412,14 @@ public class ProductManagementPanel extends JPanel {
                         getWidth(),
                         getHeight(),
                         10,
-                        10
-                );
+                        10);
 
-                // Draw button text explicitly.
+                // Draw button text.
                 g2.setFont(getFont());
                 g2.setColor(getForeground());
 
-                FontMetrics metrics = g2.getFontMetrics();
+                FontMetrics metrics =
+                        g2.getFontMetrics();
 
                 int textX = (getWidth()
                         - metrics.stringWidth(text)) / 2;
@@ -217,8 +445,10 @@ public class ProductManagementPanel extends JPanel {
         button.setForeground(Color.WHITE);
         button.setBackground(background);
 
-        button.setPreferredSize(new Dimension(125, 38));
-        button.setMinimumSize(new Dimension(125, 38));
+        button.setPreferredSize(
+                new Dimension(125, 38));
+        button.setMinimumSize(
+                new Dimension(125, 38));
 
         button.setOpaque(false);
         button.setContentAreaFilled(false);
@@ -226,12 +456,16 @@ public class ProductManagementPanel extends JPanel {
         button.setFocusPainted(false);
         button.setIcon(null);
 
-        button.setHorizontalAlignment(SwingConstants.CENTER);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        button.setVerticalAlignment(SwingConstants.CENTER);
+        button.setHorizontalAlignment(
+                SwingConstants.CENTER);
+        button.setHorizontalTextPosition(
+                SwingConstants.CENTER);
+        button.setVerticalAlignment(
+                SwingConstants.CENTER);
 
         button.setCursor(
-                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                Cursor.getPredefinedCursor(
+                        Cursor.HAND_CURSOR));
 
         return button;
     }
@@ -240,6 +474,7 @@ public class ProductManagementPanel extends JPanel {
      * Loads all products into the table.
      */
     private void loadProducts() {
+
         try {
             List<Product> products =
                     productService.getAllProducts();
@@ -260,7 +495,8 @@ public class ProductManagementPanel extends JPanel {
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Could not load products:\n" + e.getMessage(),
+                    "Could not load products:\n"
+                            + e.getMessage(),
                     "Database Error",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -270,8 +506,11 @@ public class ProductManagementPanel extends JPanel {
      * Searches products by product code or product name.
      */
     private void searchProducts() {
+
         String searchText =
-                searchField.getText().trim().toLowerCase();
+                searchField.getText()
+                        .trim()
+                        .toLowerCase();
 
         try {
             List<Product> products =
@@ -280,8 +519,12 @@ public class ProductManagementPanel extends JPanel {
             tableModel.setRowCount(0);
 
             for (Product product : products) {
-                String productCode = product.getProductCode();
-                String productName = product.getProductName();
+
+                String productCode =
+                        product.getProductCode();
+
+                String productName =
+                        product.getProductName();
 
                 boolean matches =
                         productCode != null
@@ -308,7 +551,8 @@ public class ProductManagementPanel extends JPanel {
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Could not search products:\n" + e.getMessage(),
+                    "Could not search products:\n"
+                            + e.getMessage(),
                     "Database Error",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -318,7 +562,9 @@ public class ProductManagementPanel extends JPanel {
      * Opens the Edit Product dialog for the selected product.
      */
     private void editSelectedProduct() {
-        int selectedRow = productTable.getSelectedRow();
+
+        int selectedRow =
+                productTable.getSelectedRow();
 
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(
@@ -330,7 +576,8 @@ public class ProductManagementPanel extends JPanel {
         }
 
         int modelRow =
-                productTable.convertRowIndexToModel(selectedRow);
+                productTable.convertRowIndexToModel(
+                        selectedRow);
 
         int productId = ((Number) tableModel
                 .getValueAt(modelRow, 0)).intValue();
@@ -359,10 +606,11 @@ public class ProductManagementPanel extends JPanel {
             Window owner =
                     SwingUtilities.getWindowAncestor(this);
 
-            EditProductDialog dialog = new EditProductDialog(
-                    owner,
-                    productService,
-                    selectedProduct);
+            EditProductDialog dialog =
+                    new EditProductDialog(
+                            owner,
+                            productService,
+                            selectedProduct);
 
             dialog.setVisible(true);
 

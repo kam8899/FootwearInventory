@@ -1,14 +1,20 @@
 
-package com.footwear.ui.stock;
+        package com.footwear.ui.stock;
 
 import com.footwear.model.ProductSize;
 import com.footwear.service.ProductSizeService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
+import javax.swing.RowFilter;
+
 import java.awt.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class StockManagementPanel extends JPanel {
 
@@ -16,7 +22,36 @@ public class StockManagementPanel extends JPanel {
 
     private JTable stockTable;
     private DefaultTableModel tableModel;
+    private TableRowSorter<DefaultTableModel> sorter;
     private JTextField searchField;
+    private JLabel stockCountLabel;
+
+    private static final Color PRIMARY_COLOR =
+            new Color(37, 99, 235);
+
+    private static final Color BACKGROUND_COLOR =
+            new Color(245, 247, 251);
+
+    private static final Color TEXT_COLOR =
+            new Color(31, 41, 55);
+
+    private static final Color MUTED_COLOR =
+            new Color(107, 114, 128);
+
+    private static final Color BORDER_COLOR =
+            new Color(226, 232, 240);
+
+    private static final Color HEADER_COLOR =
+            new Color(35, 55, 90);
+
+    private static final Color SUCCESS_COLOR =
+            new Color(22, 163, 74);
+
+    private static final Color DANGER_COLOR =
+            new Color(220, 53, 69);
+
+    private static final Color WARNING_COLOR =
+            new Color(217, 119, 6);
 
     public StockManagementPanel() {
         productSizeService = new ProductSizeService();
@@ -26,64 +61,97 @@ public class StockManagementPanel extends JPanel {
     }
 
     private void initializeUI() {
-        setLayout(new BorderLayout(10, 10));
-        setBorder(new EmptyBorder(20, 20, 20, 20));
-        setBackground(new Color(245, 247, 250));
+        setLayout(new BorderLayout(0, 18));
+        setBorder(new EmptyBorder(24, 26, 24, 26));
+        setBackground(BACKGROUND_COLOR);
 
-        // ================= HEADER =================
-        JPanel headerPanel = new JPanel(new BorderLayout(10, 10));
+        createHeader();
+        createStockTable();
+        createFooter();
+    }
+
+    // ================= HEADER =================
+
+    private void createHeader() {
+        JPanel headerPanel = new JPanel(
+                new BorderLayout(0, 18));
+
         headerPanel.setOpaque(false);
-
-        JLabel titleLabel = new JLabel("Stock Management");
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 26));
-        titleLabel.setForeground(new Color(35, 45, 65));
-
-        JLabel subtitleLabel =
-                new JLabel("Manage available stock by product and size");
-        subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        subtitleLabel.setForeground(Color.GRAY);
 
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(
                 new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setOpaque(false);
+
+        JLabel titleLabel =
+                new JLabel("Stock Management");
+
+        titleLabel.setFont(
+                new Font("SansSerif", Font.BOLD, 27));
+        titleLabel.setForeground(TEXT_COLOR);
+
+        JLabel subtitleLabel = new JLabel(
+                "Monitor inventory by product, brand and shoe size");
+
+        subtitleLabel.setFont(
+                new Font("SansSerif", Font.PLAIN, 13));
+        subtitleLabel.setForeground(MUTED_COLOR);
+
         titlePanel.add(titleLabel);
-        titlePanel.add(Box.createVerticalStrut(5));
+        titlePanel.add(Box.createVerticalStrut(6));
         titlePanel.add(subtitleLabel);
 
-        headerPanel.add(titlePanel, BorderLayout.WEST);
-
-        // ================= SEARCH AND REFRESH =================
         JPanel searchPanel = new JPanel(
-                new FlowLayout(FlowLayout.RIGHT, 8, 0));
+                new FlowLayout(FlowLayout.LEFT, 9, 5));
+
         searchPanel.setOpaque(false);
 
-        searchField = new JTextField(14);
-        searchField.setPreferredSize(new Dimension(170, 34));
+        searchField = new JTextField(19);
+        searchField.setFont(
+                new Font("SansSerif", Font.PLAIN, 13));
+        searchField.setForeground(TEXT_COLOR);
+        searchField.setBackground(Color.WHITE);
+        searchField.setCaretColor(PRIMARY_COLOR);
+        searchField.setPreferredSize(
+                new Dimension(245, 39));
+
+        searchField.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                BORDER_COLOR, 1),
+                        new EmptyBorder(0, 12, 0, 12)));
+
         searchField.setToolTipText(
                 "Search by code, product, brand, category or size");
 
-        JButton searchButton = new JButton("Search");
-        JButton refreshButton = new JButton("Refresh");
+        JButton searchButton = createButton(
+                "Search", PRIMARY_COLOR, 100);
+
+        JButton refreshButton = createButton(
+                "Refresh", new Color(71, 85, 105), 105);
 
         searchButton.addActionListener(e -> searchStock());
+
+        searchField.addActionListener(e -> searchStock());
 
         refreshButton.addActionListener(e -> {
             searchField.setText("");
             loadStock();
         });
 
-        searchField.addActionListener(e -> searchStock());
-
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         searchPanel.add(refreshButton);
 
-        headerPanel.add(searchPanel, BorderLayout.EAST);
+        headerPanel.add(titlePanel, BorderLayout.NORTH);
+        headerPanel.add(searchPanel, BorderLayout.CENTER);
 
         add(headerPanel, BorderLayout.NORTH);
+    }
 
-        // ================= STOCK TABLE =================
+    // ================= STOCK TABLE =================
+
+    private void createStockTable() {
         String[] columns = {
                 "ID",
                 "Product Code",
@@ -98,74 +166,210 @@ public class StockManagementPanel extends JPanel {
 
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(
+                    int row, int column) {
                 return false;
             }
         };
 
         stockTable = new JTable(tableModel);
-        stockTable.setRowHeight(30);
+
         stockTable.setFont(
                 new Font("SansSerif", Font.PLAIN, 13));
+        stockTable.setForeground(TEXT_COLOR);
+        stockTable.setBackground(Color.WHITE);
+        stockTable.setRowHeight(43);
+
         stockTable.setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION);
-        stockTable.setAutoCreateRowSorter(true);
+
+        stockTable.setShowGrid(false);
+        stockTable.setShowHorizontalLines(true);
+        stockTable.setShowVerticalLines(false);
+        stockTable.setGridColor(
+                new Color(238, 242, 247));
+
+        stockTable.setIntercellSpacing(
+                new Dimension(0, 0));
+
         stockTable.setFillsViewportHeight(true);
+        stockTable.setAutoResizeMode(
+                JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-        stockTable.getTableHeader().setFont(
-                new Font("SansSerif", Font.BOLD, 13));
-        stockTable.getTableHeader().setBackground(
-                new Color(225, 232, 242));
+        stockTable.setSelectionBackground(
+                new Color(219, 234, 254));
+        stockTable.setSelectionForeground(TEXT_COLOR);
+        stockTable.setRowMargin(0);
 
-        stockTable.getColumnModel().getColumn(0)
-                .setPreferredWidth(50);
-        stockTable.getColumnModel().getColumn(1)
-                .setPreferredWidth(110);
-        stockTable.getColumnModel().getColumn(2)
-                .setPreferredWidth(170);
-        stockTable.getColumnModel().getColumn(3)
-                .setPreferredWidth(100);
-        stockTable.getColumnModel().getColumn(4)
-                .setPreferredWidth(100);
-        stockTable.getColumnModel().getColumn(5)
-                .setPreferredWidth(60);
-        stockTable.getColumnModel().getColumn(6)
-                .setPreferredWidth(100);
-        stockTable.getColumnModel().getColumn(7)
-                .setPreferredWidth(100);
-        stockTable.getColumnModel().getColumn(8)
-                .setPreferredWidth(100);
+        sorter = new TableRowSorter<DefaultTableModel>(
+                tableModel);
 
-        JScrollPane scrollPane = new JScrollPane(stockTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(
-                new Color(220, 225, 232)));
+        stockTable.setRowSorter(sorter);
 
-        add(scrollPane, BorderLayout.CENTER);
+        configureTableHeader();
+        configureTableColumns();
 
-        // ================= FOOTER =================
-        JPanel footerPanel = new JPanel(new BorderLayout(10, 0));
+        JScrollPane scrollPane =
+                new JScrollPane(stockTable);
+
+        scrollPane.setBorder(
+                BorderFactory.createLineBorder(
+                        BORDER_COLOR, 1));
+
+        scrollPane.setBackground(Color.WHITE);
+
+        scrollPane.getViewport().setBackground(
+                Color.WHITE);
+
+        scrollPane.getVerticalScrollBar()
+                .setUnitIncrement(16);
+
+        JPanel tablePanel = new JPanel(
+                new BorderLayout());
+
+        tablePanel.setBackground(Color.WHITE);
+        tablePanel.setBorder(
+                BorderFactory.createLineBorder(
+                        BORDER_COLOR, 1));
+
+        tablePanel.add(
+                scrollPane, BorderLayout.CENTER);
+
+        add(tablePanel, BorderLayout.CENTER);
+    }
+
+    private void configureTableHeader() {
+        JTableHeader header =
+                stockTable.getTableHeader();
+
+        header.setFont(
+                new Font("SansSerif", Font.BOLD, 12));
+
+        header.setBackground(HEADER_COLOR);
+        header.setForeground(Color.WHITE);
+
+        header.setPreferredSize(
+                new Dimension(0, 47));
+
+        header.setReorderingAllowed(false);
+        header.setResizingAllowed(true);
+
+        DefaultTableCellRenderer headerRenderer =
+                new DefaultTableCellRenderer();
+
+        headerRenderer.setBackground(HEADER_COLOR);
+        headerRenderer.setForeground(Color.WHITE);
+
+        headerRenderer.setFont(
+                new Font("SansSerif", Font.BOLD, 12));
+
+        headerRenderer.setHorizontalAlignment(
+                SwingConstants.LEFT);
+
+        headerRenderer.setBorder(
+                new EmptyBorder(0, 10, 0, 8));
+
+        for (int i = 0;
+             i < stockTable.getColumnModel().getColumnCount();
+             i++) {
+
+            stockTable.getColumnModel()
+                    .getColumn(i)
+                    .setHeaderRenderer(headerRenderer);
+        }
+    }
+
+    private void configureTableColumns() {
+        int[] widths = {
+                55, 115, 180, 105, 105,
+                65, 105, 110, 110
+        };
+
+        for (int i = 0; i < widths.length; i++) {
+            stockTable.getColumnModel()
+                    .getColumn(i)
+                    .setPreferredWidth(widths[i]);
+        }
+
+        stockTable.getColumnModel()
+                .getColumn(0)
+                .setCellRenderer(new StockCellRenderer(0));
+
+        stockTable.getColumnModel()
+                .getColumn(1)
+                .setCellRenderer(new StockCellRenderer(1));
+
+        stockTable.getColumnModel()
+                .getColumn(2)
+                .setCellRenderer(new StockCellRenderer(2));
+
+        stockTable.getColumnModel()
+                .getColumn(3)
+                .setCellRenderer(new StockCellRenderer(3));
+
+        stockTable.getColumnModel()
+                .getColumn(4)
+                .setCellRenderer(new StockCellRenderer(4));
+
+        stockTable.getColumnModel()
+                .getColumn(5)
+                .setCellRenderer(new StockCellRenderer(5));
+
+        stockTable.getColumnModel()
+                .getColumn(6)
+                .setCellRenderer(new QuantityCellRenderer(false));
+
+        stockTable.getColumnModel()
+                .getColumn(7)
+                .setCellRenderer(new QuantityCellRenderer(true));
+
+        stockTable.getColumnModel()
+                .getColumn(8)
+                .setCellRenderer(new StatusCellRenderer());
+    }
+
+    // ================= FOOTER =================
+
+    private void createFooter() {
+        JPanel footerPanel = new JPanel(
+                new BorderLayout(12, 0));
+
         footerPanel.setOpaque(false);
-        footerPanel.setPreferredSize(new Dimension(1, 60));
-        footerPanel.setMinimumSize(new Dimension(1, 60));
+        footerPanel.setBorder(
+                new EmptyBorder(4, 0, 0, 0));
+
+        JPanel informationPanel = new JPanel();
+        informationPanel.setLayout(
+                new BoxLayout(informationPanel, BoxLayout.Y_AXIS));
+        informationPanel.setOpaque(false);
+
+        stockCountLabel = new JLabel("0 stock records");
+
+        stockCountLabel.setFont(
+                new Font("SansSerif", Font.BOLD, 12));
+        stockCountLabel.setForeground(TEXT_COLOR);
 
         JLabel footerLabel = new JLabel(
-                "Low Stock: quantity is less than or equal to minimum stock.");
+                "Low Stock: available quantity is at or below minimum stock.");
+
         footerLabel.setFont(
-                new Font("SansSerif", Font.PLAIN, 12));
-        footerLabel.setForeground(new Color(100, 100, 100));
+                new Font("SansSerif", Font.PLAIN, 11));
+        footerLabel.setForeground(MUTED_COLOR);
 
-        footerPanel.add(footerLabel, BorderLayout.CENTER);
+        informationPanel.add(stockCountLabel);
+        informationPanel.add(Box.createVerticalStrut(5));
+        informationPanel.add(footerLabel);
 
-        // ================= STOCK MOVEMENT BUTTONS =================
         JPanel movementPanel = new JPanel(
-                new FlowLayout(FlowLayout.RIGHT, 10, 8));
+                new FlowLayout(FlowLayout.RIGHT, 10, 4));
+
         movementPanel.setOpaque(false);
 
-        JButton stockInButton = createActionButton(
-                "Stock In", new Color(35, 139, 85));
+        JButton stockInButton = createButton(
+                "Stock In", SUCCESS_COLOR, 125);
 
-        JButton stockOutButton = createActionButton(
-                "Stock Out", new Color(190, 65, 65));
+        JButton stockOutButton = createButton(
+                "Stock Out", DANGER_COLOR, 125);
 
         stockInButton.addActionListener(
                 e -> openMovementDialog("IN"));
@@ -176,87 +380,68 @@ public class StockManagementPanel extends JPanel {
         movementPanel.add(stockInButton);
         movementPanel.add(stockOutButton);
 
-        footerPanel.add(movementPanel, BorderLayout.EAST);
+        footerPanel.add(
+                informationPanel, BorderLayout.CENTER);
+
+        footerPanel.add(
+                movementPanel, BorderLayout.EAST);
 
         add(footerPanel, BorderLayout.SOUTH);
     }
 
-    // ================= CUSTOM BUTTON =================
-    private JButton createActionButton(
-            final String text,
-            final Color background) {
+    // ================= BUTTON DESIGN =================
 
-        JButton button = new JButton(text) {
+    private JButton createButton(
+            String text,
+            Color backgroundColor,
+            int width) {
 
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
+        JButton button = new JButton(text);
 
-                g2.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
+        button.setFont(
+                new Font("SansSerif", Font.BOLD, 12));
 
-                Color buttonColor = background;
-
-                if (getModel().isPressed()) {
-                    buttonColor = background.darker();
-                } else if (getModel().isRollover()) {
-                    buttonColor = background.brighter();
-                }
-
-                // Draw the background.
-                g2.setColor(buttonColor);
-                g2.fillRoundRect(
-                        0, 0, getWidth(), getHeight(), 10, 10);
-
-                // Draw the text directly so it does not depend
-                // on the Look and Feel's button text painting.
-                g2.setFont(getFont());
-                g2.setColor(getForeground());
-
-                FontMetrics metrics = g2.getFontMetrics();
-
-                int textX = (getWidth()
-                        - metrics.stringWidth(text)) / 2;
-
-                int textY = (getHeight()
-                        - metrics.getHeight()) / 2
-                        + metrics.getAscent();
-
-                g2.drawString(text, textX, textY);
-                g2.dispose();
-            }
-
-            @Override
-            public boolean isContentAreaFilled() {
-                return false;
-            }
-        };
-
-        button.setFont(new Font("SansSerif", Font.BOLD, 14));
         button.setForeground(Color.WHITE);
-        button.setBackground(background);
+        button.setBackground(backgroundColor);
 
-        button.setPreferredSize(new Dimension(145, 42));
-        button.setMinimumSize(new Dimension(145, 42));
-
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
         button.setFocusPainted(false);
-        button.setIcon(null);
-
-        button.setHorizontalAlignment(SwingConstants.CENTER);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        button.setVerticalAlignment(SwingConstants.CENTER);
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(true);
 
         button.setCursor(
-                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                new Cursor(Cursor.HAND_CURSOR));
+
+        button.setPreferredSize(
+                new Dimension(width, 39));
+
+        button.setBorder(
+                new EmptyBorder(8, 12, 8, 12));
+
+        Color originalColor = backgroundColor;
+        Color hoverColor = backgroundColor.darker();
+
+        button.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+
+                    @Override
+                    public void mouseEntered(
+                            java.awt.event.MouseEvent e) {
+                        button.setBackground(hoverColor);
+                    }
+
+                    @Override
+                    public void mouseExited(
+                            java.awt.event.MouseEvent e) {
+                        button.setBackground(originalColor);
+                    }
+                });
 
         return button;
     }
 
     // ================= LOAD STOCK =================
+
     private void loadStock() {
         try {
             List<ProductSize> productSizes =
@@ -267,6 +452,9 @@ public class StockManagementPanel extends JPanel {
             for (ProductSize productSize : productSizes) {
                 addStockRow(productSize);
             }
+
+            updateStockCount();
+            stockTable.clearSelection();
 
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(
@@ -279,50 +467,46 @@ public class StockManagementPanel extends JPanel {
     }
 
     // ================= SEARCH STOCK =================
+
     private void searchStock() {
-        String searchText = searchField.getText()
-                .trim()
-                .toLowerCase();
+        String searchText = searchField.getText().trim();
 
-        try {
-            List<ProductSize> productSizes =
-                    productSizeService.getAllProductSizes();
+        if (searchText.isEmpty()) {
+            sorter.setRowFilter(null);
+        } else {
+            RowFilter<DefaultTableModel, Integer> filter =
+                    new RowFilter<DefaultTableModel, Integer>() {
 
-            tableModel.setRowCount(0);
+                        @Override
+                        public boolean include(
+                                Entry<? extends DefaultTableModel,
+                                        ? extends Integer> entry) {
 
-            for (ProductSize productSize : productSizes) {
-                String productCode =
-                        safe(productSize.getProductCode());
-                String productName =
-                        safe(productSize.getProductName());
-                String brandName =
-                        safe(productSize.getBrandName());
-                String categoryName =
-                        safe(productSize.getCategoryName());
-                String shoeSize =
-                        safe(productSize.getShoeSize());
+                            for (int i = 0; i < entry.getValueCount(); i++) {
+                                Object value = entry.getValue(i);
 
-                if (productCode.toLowerCase().contains(searchText)
-                        || productName.toLowerCase().contains(searchText)
-                        || brandName.toLowerCase().contains(searchText)
-                        || categoryName.toLowerCase().contains(searchText)
-                        || shoeSize.toLowerCase().contains(searchText)) {
+                                if (value != null
+                                        && Pattern.compile(
+                                                Pattern.quote(searchText),
+                                                Pattern.CASE_INSENSITIVE)
+                                        .matcher(value.toString())
+                                        .find()) {
+                                    return true;
+                                }
+                            }
 
-                    addStockRow(productSize);
-                }
-            }
+                            return false;
+                        }
+                    };
 
-        } catch (RuntimeException e) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Could not search stock records:\n"
-                            + e.getMessage(),
-                    "Search Error",
-                    JOptionPane.ERROR_MESSAGE);
+            sorter.setRowFilter(filter);
         }
+
+        updateStockCount();
     }
 
     // ================= ADD TABLE ROW =================
+
     private void addStockRow(ProductSize productSize) {
         int quantity = productSize.getQuantity();
         int minimumStock = productSize.getMinimumStock();
@@ -344,7 +528,21 @@ public class StockManagementPanel extends JPanel {
         });
     }
 
+    private void updateStockCount() {
+        if (stockCountLabel == null) {
+            return;
+        }
+
+        int visibleCount = stockTable.getRowCount();
+
+        stockCountLabel.setText(
+                visibleCount == 1
+                        ? "1 stock record"
+                        : visibleCount + " stock records");
+    }
+
     // ================= STOCK IN / STOCK OUT =================
+
     private void openMovementDialog(String movementType) {
         int selectedRow = stockTable.getSelectedRow();
 
@@ -365,8 +563,10 @@ public class StockManagementPanel extends JPanel {
 
         String productCode =
                 safe(tableModel.getValueAt(modelRow, 1));
+
         String productName =
                 safe(tableModel.getValueAt(modelRow, 2));
+
         String shoeSize =
                 safe(tableModel.getValueAt(modelRow, 5));
 
@@ -400,51 +600,66 @@ public class StockManagementPanel extends JPanel {
         JTextArea notesArea = new JTextArea(3, 20);
         notesArea.setLineWrap(true);
         notesArea.setWrapStyleWord(true);
+        notesArea.setFont(
+                new Font("SansSerif", Font.PLAIN, 13));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
+
         GridBagConstraints gbc = new GridBagConstraints();
 
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(6, 6, 6, 6);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        addDialogRow(formPanel, gbc, 0,
+        addDialogRow(
+                formPanel, gbc, 0,
                 "Product:", productCode + " - " + productName);
 
-        addDialogRow(formPanel, gbc, 1,
+        addDialogRow(
+                formPanel, gbc, 1,
                 "Shoe Size:", shoeSize);
 
-        addDialogRow(formPanel, gbc, 2,
-                "Available Qty:", String.valueOf(availableQuantity));
+        addDialogRow(
+                formPanel, gbc, 2,
+                "Available Qty:",
+                String.valueOf(availableQuantity));
 
-        addDialogRow(formPanel, gbc, 3,
+        addDialogRow(
+                formPanel, gbc, 3,
                 "Movement:", title);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.weightx = 0;
+
         formPanel.add(new JLabel("Quantity:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1;
+
         formPanel.add(quantitySpinner, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.weightx = 0;
+
         formPanel.add(new JLabel("Reason:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1;
+
         formPanel.add(reasonComboBox, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 6;
         gbc.weightx = 0;
+
         formPanel.add(new JLabel("Notes:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+
         formPanel.add(new JScrollPane(notesArea), gbc);
 
         int result = JOptionPane.showConfirmDialog(
@@ -475,6 +690,7 @@ public class StockManagementPanel extends JPanel {
                             + availableQuantity,
                     "Insufficient Stock",
                     JOptionPane.WARNING_MESSAGE);
+
             return;
         }
 
@@ -521,6 +737,7 @@ public class StockManagementPanel extends JPanel {
     }
 
     // ================= DIALOG ROW HELPER =================
+
     private void addDialogRow(
             JPanel panel,
             GridBagConstraints gbc,
@@ -531,15 +748,198 @@ public class StockManagementPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
         panel.add(new JLabel(label), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1;
+
         panel.add(new JLabel(value), gbc);
     }
 
     // ================= NULL-SAFE TEXT =================
+
     private String safe(Object value) {
         return value == null ? "" : value.toString();
+    }
+
+    // ================= STANDARD TABLE CELL RENDERER =================
+
+    private class StockCellRenderer
+            extends DefaultTableCellRenderer {
+
+        private final int column;
+
+        public StockCellRenderer(int column) {
+            this.column = column;
+            setOpaque(true);
+            setBorder(
+                    new EmptyBorder(0, 10, 0, 8));
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int columnIndex) {
+
+            super.getTableCellRendererComponent(
+                    table, value, isSelected,
+                    hasFocus, row, columnIndex);
+
+            setFont(new Font(
+                    "SansSerif",
+                    column == 2 ? Font.BOLD : Font.PLAIN,
+                    12));
+
+            if (isSelected) {
+                setBackground(new Color(219, 234, 254));
+                setForeground(TEXT_COLOR);
+            } else {
+                setBackground(row % 2 == 0
+                        ? Color.WHITE
+                        : new Color(248, 250, 253));
+
+                setForeground(column == 0
+                        ? MUTED_COLOR
+                        : TEXT_COLOR);
+            }
+
+            if (column == 0 || column == 5) {
+                setHorizontalAlignment(
+                        SwingConstants.CENTER);
+            } else {
+                setHorizontalAlignment(
+                        SwingConstants.LEFT);
+            }
+
+            return this;
+        }
+    }
+
+    // ================= QUANTITY CELL RENDERER =================
+
+    private class QuantityCellRenderer
+            extends DefaultTableCellRenderer {
+
+        private final boolean minimumStockColumn;
+
+        public QuantityCellRenderer(
+                boolean minimumStockColumn) {
+
+            this.minimumStockColumn = minimumStockColumn;
+            setOpaque(true);
+            setBorder(
+                    new EmptyBorder(0, 10, 0, 8));
+            setHorizontalAlignment(
+                    SwingConstants.CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+
+            super.getTableCellRendererComponent(
+                    table, value, isSelected,
+                    hasFocus, row, column);
+
+            setFont(new Font(
+                    "SansSerif", Font.BOLD, 12));
+
+            if (isSelected) {
+                setBackground(new Color(219, 234, 254));
+                setForeground(TEXT_COLOR);
+                return this;
+            }
+
+            setBackground(row % 2 == 0
+                    ? Color.WHITE
+                    : new Color(248, 250, 253));
+
+            int quantity = 0;
+
+            if (value instanceof Number) {
+                quantity = ((Number) value).intValue();
+            }
+
+            if (minimumStockColumn) {
+                setForeground(WARNING_COLOR);
+            } else {
+                Object minimumValue =
+                        table.getValueAt(row, 7);
+
+                int minimumStock = minimumValue instanceof Number
+                        ? ((Number) minimumValue).intValue()
+                        : 0;
+
+                if (quantity <= minimumStock) {
+                    setForeground(DANGER_COLOR);
+                } else {
+                    setForeground(SUCCESS_COLOR);
+                }
+            }
+
+            return this;
+        }
+    }
+
+    // ================= STOCK STATUS RENDERER =================
+
+    private class StatusCellRenderer
+            extends DefaultTableCellRenderer {
+
+        public StatusCellRenderer() {
+            setOpaque(true);
+            setBorder(
+                    new EmptyBorder(0, 10, 0, 8));
+            setHorizontalAlignment(
+                    SwingConstants.CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+
+            super.getTableCellRendererComponent(
+                    table, value, isSelected,
+                    hasFocus, row, column);
+
+            String status =
+                    value == null ? "" : value.toString();
+
+            setFont(new Font(
+                    "SansSerif", Font.BOLD, 11));
+
+            if (isSelected) {
+                setBackground(new Color(219, 234, 254));
+                setForeground(TEXT_COLOR);
+            } else {
+                setBackground(row % 2 == 0
+                        ? Color.WHITE
+                        : new Color(248, 250, 253));
+
+                if ("Low Stock".equalsIgnoreCase(status)) {
+                    setForeground(DANGER_COLOR);
+                } else {
+                    setForeground(SUCCESS_COLOR);
+                }
+            }
+
+            return this;
+        }
     }
 }

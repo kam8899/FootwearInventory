@@ -18,7 +18,7 @@ public class ProductManagementPanel extends JPanel {
             new Color(245, 247, 250);
 
     private static final Color HEADER_COLOR =
-            new Color(36, 59, 100);
+            new Color(29, 63, 129);
 
     private static final Color HEADER_BORDER_COLOR =
             new Color(52, 79, 125);
@@ -59,16 +59,19 @@ public class ProductManagementPanel extends JPanel {
         title.setForeground(new Color(35, 45, 65));
 
         JButton addButton = createActionButton(
-                "+ Add Product",
+                "➕",
                 new Color(35, 139, 85));
+        addButton.setToolTipText("Add Product");
 
         JButton refreshButton = createActionButton(
-                "Refresh",
-                new Color(65, 95, 145));
+                "🔄",
+                new Color(71, 85, 105));
+        refreshButton.setToolTipText("Refresh");
 
         JButton editButton = createActionButton(
-                "Edit Product",
-                new Color(75, 95, 125));
+                "✎",
+                new Color(63, 116, 236));
+        editButton.setToolTipText("Edit");
 
         JPanel actions = new JPanel(
                 new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -157,14 +160,16 @@ public class ProductManagementPanel extends JPanel {
                 new Dimension(250, 36));
 
         JButton searchButton = createActionButton(
-                "Search",
-                new Color(65, 95, 145));
+                "🔍",
+                new Color(63, 116, 236));
+        searchButton.setToolTipText("Search Product");
+
 
         JPanel searchPanel = new JPanel(
                 new FlowLayout(FlowLayout.LEFT, 8, 0));
         searchPanel.setOpaque(false);
 
-        JLabel searchLabel = new JLabel("Search:");
+        JLabel searchLabel = new JLabel();
         searchLabel.setFont(
                 new Font("SansSerif", Font.BOLD, 13));
         searchLabel.setForeground(TEXT_COLOR);
@@ -225,7 +230,7 @@ public class ProductManagementPanel extends JPanel {
         header.setPreferredSize(
                 new Dimension(0, 44));
         header.setFont(
-                new Font("SansSerif", Font.BOLD, 12));
+                new Font("SansSerif", Font.BOLD, 15));
         header.setBackground(HEADER_COLOR);
         header.setForeground(Color.WHITE);
         header.setOpaque(true);
@@ -446,9 +451,9 @@ public class ProductManagementPanel extends JPanel {
         button.setBackground(background);
 
         button.setPreferredSize(
-                new Dimension(125, 38));
+                new Dimension(50, 38));
         button.setMinimumSize(
-                new Dimension(125, 38));
+                new Dimension(50, 38));
 
         button.setOpaque(false);
         button.setContentAreaFilled(false);

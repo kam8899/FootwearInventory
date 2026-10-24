@@ -35,7 +35,7 @@ public class CategoriesManagementPanel extends JPanel {
             new Color(226, 232, 240);
 
     private static final Color HEADER_COLOR =
-            new Color(35, 55, 90);
+            new Color(29, 63, 129);
 
     private static final Color SUCCESS_COLOR =
             new Color(22, 163, 74);
@@ -107,7 +107,7 @@ public class CategoriesManagementPanel extends JPanel {
 
         JTableHeader header = categoryTable.getTableHeader();
 
-        header.setFont(new Font("SansSerif", Font.BOLD, 13));
+        header.setFont(new Font("SansSerif", Font.BOLD, 15));
         header.setBackground(HEADER_COLOR);
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(0, 47));

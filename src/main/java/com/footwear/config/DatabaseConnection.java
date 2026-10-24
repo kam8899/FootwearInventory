@@ -13,7 +13,9 @@ public class DatabaseConnection {
     private static final String USER = "postgres";
 
     private static final String PASSWORD =
-            System.getenv("FOOTWEAR_DB_PASSWORD");
+            "Dipa@9511";
+
+        //    System.getenv("FOOTWEAR_DB_PASSWORD");
 
     public static Connection getConnection() throws SQLException {
         if (PASSWORD == null || PASSWORD.isBlank()) {

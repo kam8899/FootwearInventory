@@ -29,7 +29,7 @@ public class SalesManagementPanel extends JPanel {
     private final Color BACKGROUND_COLOR = new Color(245, 247, 251);
     private final Color CARD_COLOR = Color.WHITE;
     private final Color PRIMARY_COLOR = new Color(37, 76, 145);
-    private final Color HEADER_COLOR = new Color(31, 55, 95);
+    private final Color HEADER_COLOR = new Color(29, 63, 129);
     private final Color TEXT_COLOR = new Color(40, 49, 66);
     private final Color MUTED_COLOR = new Color(112, 122, 140);
     private final Color BORDER_COLOR = new Color(225, 230, 238);
@@ -230,7 +230,7 @@ public class SalesManagementPanel extends JPanel {
         salesTable.setRowMargin(0);
 
         JTableHeader header = salesTable.getTableHeader();
-        header.setFont(new Font("SansSerif", Font.BOLD, 12));
+        header.setFont(new Font("SansSerif", Font.BOLD, 15));
         header.setBackground(HEADER_COLOR);
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(0, 43));

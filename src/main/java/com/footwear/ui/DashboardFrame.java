@@ -106,7 +106,6 @@ public class DashboardFrame extends JFrame {
         addNavigationButton(
                 sidebar, "Brands", this::showBrands);
 
-        // Opens the Category Management screen.
         addNavigationButton(
                 sidebar, "Categories", this::showCategories);
 
@@ -117,14 +116,15 @@ public class DashboardFrame extends JFrame {
         addNavigationButton(
                 sidebar, "Sales", this::showSales);
 
+        addNavigationButton(
+                sidebar, "Low-Stock Alerts", this::showLowStock);
+
         // Opens the screen containing all three reports.
         addNavigationButton(
                 sidebar, "Reports", this::showReports);
 
         sidebar.add(Box.createVerticalGlue());
 
-        addNavigationButton(
-                sidebar, "Low-Stock Alerts", this::showLowStock);
 
         JLabel footer =
                 new JLabel("Footwear Inventory v1.0");
@@ -239,7 +239,7 @@ public class DashboardFrame extends JFrame {
 
         JLabel heading = new JLabel("Dashboard");
         heading.setFont(
-                new Font("SansSerif", Font.BOLD, 26));
+                new Font("SansSerif", Font.BOLD, 28));
         heading.setForeground(TEXT_COLOR);
 
         JLabel description =
@@ -255,16 +255,16 @@ public class DashboardFrame extends JFrame {
         headingPanel.add(description);
 
         JButton refreshButton =
-                new JButton("Refresh Dashboard");
+                new JButton("🔄");
 
         refreshButton.setFont(
-                new Font("SansSerif", Font.BOLD, 12));
+                new Font("SansSerif", Font.BOLD, 13));
         refreshButton.setPreferredSize(
-                new Dimension(185, 38));
+                new Dimension(70, 38));
         refreshButton.setFocusPainted(false);
         refreshButton.setCursor(
                 new Cursor(Cursor.HAND_CURSOR));
-        refreshButton.setBackground(PRIMARY_COLOR);
+        refreshButton.setBackground(new Color(46, 61, 96));;
         refreshButton.setForeground(Color.WHITE);
         refreshButton.setOpaque(true);
         refreshButton.setBorderPainted(false);

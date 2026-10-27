@@ -1,9 +1,10 @@
 
-        package com.footwear.ui;
+package com.footwear.ui;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,28 +16,47 @@ public class DashboardChartPanel extends JPanel {
     private List<String> labels = new ArrayList<String>();
     private List<Long> values = new ArrayList<Long>();
 
+    private static final Color TEXT_COLOR =
+            new Color(45, 52, 65);
+
+    private static final Color MUTED_COLOR =
+            new Color(115, 123, 137);
+
+    private static final Color GRID_COLOR =
+            new Color(232, 237, 244);
+
     public DashboardChartPanel(String chartTitle, Color barColor) {
         this.chartTitle = chartTitle;
         this.barColor = barColor;
 
         setBackground(Color.WHITE);
+
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(
-                        new Color(225, 229, 236)),
-                BorderFactory.createEmptyBorder(12, 15, 10, 15)
+                        new Color(225, 231, 239)),
+                new EmptyBorder(12, 15, 12, 15)
         ));
 
-        setPreferredSize(new Dimension(400, 245));
-        setMinimumSize(new Dimension(250, 200));
+        setPreferredSize(new Dimension(400, 260));
+        setMinimumSize(new Dimension(250, 220));
+        setOpaque(true);
     }
 
     public void setChartData(List<Object[]> records) {
         labels = new ArrayList<String>();
         values = new ArrayList<Long>();
 
-        for (Object[] record : records) {
-            labels.add(String.valueOf(record[0]));
-            values.add(((Number) record[1]).longValue());
+        if (records != null) {
+            for (Object[] record : records) {
+                if (record == null || record.length < 2
+                        || record[0] == null
+                        || !(record[1] instanceof Number)) {
+                    continue;
+                }
+
+                labels.add(String.valueOf(record[0]));
+                values.add(((Number) record[1]).longValue());
+            }
         }
 
         repaint();
@@ -56,24 +76,34 @@ public class DashboardChartPanel extends JPanel {
             int width = getWidth();
             int height = getHeight();
 
-            g.setColor(new Color(45, 52, 65));
-            g.setFont(new Font("SansSerif", Font.BOLD, 15));
-            g.drawString(chartTitle, 15, 25);
+            // Chart heading
+            g.setColor(TEXT_COLOR);
+            g.setFont(new Font("SansSerif", Font.BOLD, 16));
+            g.drawString(chartTitle, 15, 24);
+
+            // Small blue accent line under the heading
+            g.setColor(barColor);
+            g.fillRoundRect(15, 34, 38, 3, 3, 3);
 
             if (labels.isEmpty()) {
-                g.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                g.setColor(Color.GRAY);
+                g.setColor(MUTED_COLOR);
+                g.setFont(new Font("SansSerif", Font.PLAIN, 13));
+
+                String message = "No data available";
+                FontMetrics fm = g.getFontMetrics();
+
                 g.drawString(
-                        "No data available",
-                        20,
-                        Math.max(60, height / 2));
+                        message,
+                        Math.max(15, (width - fm.stringWidth(message)) / 2),
+                        height / 2);
+
                 return;
             }
 
-            int left = 38;
+            int left = 43;
             int right = 15;
-            int top = 48;
-            int bottom = 43;
+            int top = 55;
+            int bottom = 42;
 
             int chartWidth = width - left - right;
             int chartHeight = height - top - bottom;
@@ -85,18 +115,17 @@ public class DashboardChartPanel extends JPanel {
             long maxValue = 0;
 
             for (Long value : values) {
-                if (value > maxValue) {
+                if (value != null && value > maxValue) {
                     maxValue = value;
                 }
             }
 
-            if (maxValue == 0) {
+            if (maxValue <= 0) {
                 maxValue = 1;
             }
 
-            // Draw horizontal guide lines and scale labels.
+            // Draw horizontal grid lines and scale values.
             g.setFont(new Font("SansSerif", Font.PLAIN, 10));
-            g.setColor(new Color(125, 132, 145));
 
             for (int i = 0; i <= 4; i++) {
                 int y = top + chartHeight
@@ -104,89 +133,86 @@ public class DashboardChartPanel extends JPanel {
 
                 long scaleValue = maxValue * i / 4;
 
-                g.drawString(
-                        String.valueOf(scaleValue),
-                        2,
-                        y + 4);
+                g.setColor(MUTED_COLOR);
+                g.drawString(String.valueOf(scaleValue), 2, y + 4);
 
-                g.setColor(new Color(235, 238, 243));
+                g.setColor(GRID_COLOR);
                 g.drawLine(left, y, width - right, y);
-                g.setColor(new Color(125, 132, 145));
             }
 
             int count = labels.size();
             double slotWidth = (double) chartWidth / count;
+
             int barWidth = Math.max(
-                    5,
-                    (int) (slotWidth * 0.55));
+                    8,
+                    Math.min(38, (int) (slotWidth * 0.55)));
 
             for (int i = 0; i < count; i++) {
-                long value = values.get(i);
+                long value = Math.max(0, values.get(i));
 
                 int barHeight = (int) Math.round(
                         (double) value / maxValue * chartHeight);
 
-                int x = left
-                        + (int) (i * slotWidth)
+                int x = left + (int) (i * slotWidth)
                         + ((int) slotWidth - barWidth) / 2;
 
                 int y = top + chartHeight - barHeight;
 
-                g.setColor(barColor);
-
+                // Rounded bar
                 if (barHeight > 0) {
-                    g.fillRoundRect(
-                            x,
-                            y,
-                            barWidth,
-                            barHeight,
-                            12,
-                            12);
+                    g.setColor(barColor);
+                    g.fill(new RoundRectangle2D.Double(
+                            x, y, barWidth, barHeight, 9, 9));
                 }
 
-                // Value above each bar.
-                g.setColor(new Color(45, 52, 65));
-                g.setFont(new Font("SansSerif", Font.BOLD, 10));
-
+                // Value above each bar
                 String valueText = String.valueOf(value);
-                FontMetrics fm = g.getFontMetrics();
+
+                g.setFont(new Font("SansSerif", Font.BOLD, 10));
+                g.setColor(TEXT_COLOR);
+
+                FontMetrics valueMetrics = g.getFontMetrics();
 
                 int valueX = x + (barWidth
-                        - fm.stringWidth(valueText)) / 2;
+                        - valueMetrics.stringWidth(valueText)) / 2;
 
-                int valueY = Math.max(top + 11, y - 5);
+                int valueY = Math.max(
+                        top + 12,
+                        y - 5);
 
                 g.drawString(valueText, valueX, valueY);
 
-                // Category or weekday label.
-                g.setFont(new Font("SansSerif", Font.PLAIN, 10));
-
+                // Category or date label
                 String label = labels.get(i);
 
-                int maxLabelWidth = Math.max(
-                        20, (int) slotWidth - 2);
+                g.setFont(new Font("SansSerif", Font.PLAIN, 10));
+                FontMetrics labelMetrics = g.getFontMetrics();
 
-                if (fm.stringWidth(label) > maxLabelWidth) {
-                    while (label.length() > 3
-                            && fm.stringWidth(label + "...") > maxLabelWidth) {
-                        label = label.substring(0, label.length() - 1);
-                    }
+                int availableWidth = Math.max(
+                        15, (int) slotWidth - 2);
 
-                    if (!label.equals(labels.get(i))) {
-                        label = label + "...";
-                    }
+                while (label.length() > 3
+                        && labelMetrics.stringWidth(label) > availableWidth) {
+                    label = label.substring(0, label.length() - 1);
                 }
 
-                fm = g.getFontMetrics();
+                if (!label.equals(labels.get(i))) {
+                    label = label + "...";
+                }
 
                 int labelX = x + (barWidth
-                        - fm.stringWidth(label)) / 2;
+                        - labelMetrics.stringWidth(label)) / 2;
 
-                g.setColor(new Color(90, 99, 115));
+                // Keep the label within its chart slot.
+                labelX = Math.max(
+                        left + (int) (i * slotWidth),
+                        labelX);
+
+                g.setColor(MUTED_COLOR);
                 g.drawString(
                         label,
                         labelX,
-                        top + chartHeight + 17);
+                        top + chartHeight + 18);
             }
 
         } finally {

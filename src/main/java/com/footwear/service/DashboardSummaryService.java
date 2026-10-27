@@ -1,5 +1,5 @@
 
-        package com.footwear.service;
+package com.footwear.service;
 
 import com.footwear.dao.DashboardSummaryDAO;
 import com.footwear.model.DashboardSummary;

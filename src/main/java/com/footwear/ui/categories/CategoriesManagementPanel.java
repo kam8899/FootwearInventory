@@ -23,7 +23,7 @@ public class CategoriesManagementPanel extends JPanel {
             new Color(245, 247, 251);
 
     private static final Color PRIMARY_COLOR =
-            new Color(37, 99, 235);
+            new Color(63, 116, 236);
 
     private static final Color TEXT_COLOR =
             new Color(31, 41, 55);
@@ -41,7 +41,7 @@ public class CategoriesManagementPanel extends JPanel {
             new Color(22, 163, 74);
 
     private static final Color DANGER_COLOR =
-            new Color(220, 53, 69);
+            new Color(239, 68, 68);
 
     private final CategoryService categoryService;
 
@@ -161,7 +161,7 @@ public class CategoriesManagementPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout(0, 18));
         panel.setOpaque(false);
 
-        JLabel title = new JLabel("Categories Management");
+        JLabel title = new JLabel("\uD83D\uDDC2 Categories Management");
         title.setFont(new Font("SansSerif", Font.BOLD, 27));
         title.setForeground(TEXT_COLOR);
 
@@ -200,10 +200,13 @@ public class CategoriesManagementPanel extends JPanel {
                 "Search by category name");
 
         JButton searchButton = createButton(
-                "Search", PRIMARY_COLOR, 100);
+                "⌕", PRIMARY_COLOR, 60);
+        searchButton.setToolTipText("search");
 
         JButton refreshButton = createButton(
-                "Refresh", new Color(71, 85, 105), 105);
+                "↻",  new Color(99,102,241), 60);
+        refreshButton.setToolTipText("Refresh");
+
 
         searchButton.addActionListener(
                 e -> searchCategories());
@@ -220,8 +223,9 @@ public class CategoriesManagementPanel extends JPanel {
         searchPanel.add(searchButton);
         searchPanel.add(refreshButton);
 
-        panel.add(titlePanel, BorderLayout.NORTH);
-        panel.add(searchPanel, BorderLayout.CENTER);
+        panel.add(titlePanel, BorderLayout.WEST);
+        panel.add(searchPanel, BorderLayout.EAST);
+        add(panel, BorderLayout.NORTH);
 
         return panel;
     }
@@ -244,13 +248,13 @@ public class CategoriesManagementPanel extends JPanel {
         actionPanel.setOpaque(false);
 
         JButton addButton = createButton(
-                "+  Add Category", SUCCESS_COLOR, 150);
+                "＋ Add Category", new Color(16,185,129), 150);
 
         JButton editButton = createButton(
-                "Edit Category", PRIMARY_COLOR, 145);
+                "✎ Edit Category", new Color(59,130,246), 145);
 
         JButton deactivateButton = createButton(
-                "Deactivate", DANGER_COLOR, 135);
+                "✖ Deactivate", DANGER_COLOR, 135);
 
         addButton.addActionListener(e -> addCategory());
         editButton.addActionListener(e -> editCategory());

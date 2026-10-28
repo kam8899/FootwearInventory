@@ -1,5 +1,5 @@
 
-        package com.footwear.dao;
+package com.footwear.dao;
 
 import com.footwear.config.DatabaseConnection;
 import com.footwear.model.DashboardSummary;

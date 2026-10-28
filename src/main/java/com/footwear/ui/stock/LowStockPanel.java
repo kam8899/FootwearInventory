@@ -20,7 +20,7 @@ public class LowStockPanel extends JPanel {
             new Color(45, 91, 170);
 
     private static final Color HEADER_COLOR =
-            new Color(35, 48, 70);
+            new Color(29, 63, 129);
 
     private static final Color HEADER_TEXT_COLOR =
             Color.WHITE;
@@ -87,13 +87,13 @@ public class LowStockPanel extends JPanel {
                 new Font("SansSerif", Font.BOLD, 14));
         countLabel.setForeground(PRIMARY_COLOR);
 
-        JButton refreshButton = new JButton("Refresh");
+        JButton refreshButton = new JButton("↻ Refresh");
 
         refreshButton.setFont(
                 new Font("SansSerif", Font.BOLD, 12));
         refreshButton.setPreferredSize(
-                new Dimension(110, 36));
-        refreshButton.setBackground(PRIMARY_COLOR);
+                new Dimension(100, 50));
+        refreshButton.setBackground(new Color(99,102,241));
         refreshButton.setForeground(Color.WHITE);
         refreshButton.setFocusPainted(false);
         refreshButton.setBorderPainted(false);

@@ -1,4 +1,3 @@
-
 package com.footwear.ui.sales;
 
 import com.footwear.dao.ProductSizeDAO;
@@ -229,13 +228,47 @@ public class SalesManagementPanel extends JPanel {
         salesTable.setAutoCreateRowSorter(true);
         salesTable.setRowMargin(0);
 
+        // Configure the table header explicitly for consistent rendering
+        // across Windows and macOS Look and Feel implementations.
         JTableHeader header = salesTable.getTableHeader();
         header.setFont(new Font("SansSerif", Font.BOLD, 15));
         header.setBackground(HEADER_COLOR);
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(0, 43));
         header.setReorderingAllowed(false);
+        header.setOpaque(true);
         header.setBorder(BorderFactory.createEmptyBorder());
+
+        // Explicit header renderer ensures the header cells use the intended
+        // navy background and white text instead of platform defaults.
+        DefaultTableCellRenderer headerRenderer =
+                new DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(
+                            JTable table,
+                            Object value,
+                            boolean isSelected,
+                            boolean hasFocus,
+                            int row,
+                            int column) {
+
+                        super.getTableCellRendererComponent(
+                                table, value, isSelected,
+                                hasFocus, row, column);
+
+                        setOpaque(true);
+                        setBackground(HEADER_COLOR);
+                        setForeground(Color.WHITE);
+                        setFont(new Font("SansSerif", Font.BOLD, 12));
+                        setHorizontalAlignment(SwingConstants.LEFT);
+                        setBorder(new EmptyBorder(0, 10, 0, 10));
+
+                        return this;
+                    }
+                };
+
+        header.setDefaultRenderer(headerRenderer);
+        header.repaint();
 
         DefaultTableCellRenderer cellRenderer =
                 new DefaultTableCellRenderer() {

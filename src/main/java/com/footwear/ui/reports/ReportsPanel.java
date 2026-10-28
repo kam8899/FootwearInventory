@@ -34,7 +34,7 @@ public class ReportsPanel extends JPanel {
     private final JTextField endDateField;
 
     private static final Color BACKGROUND_COLOR = new Color(245, 247, 250);
-    private static final Color HEADER_COLOR = new Color(35, 48, 70);
+    private static final Color HEADER_COLOR = new Color(29, 63, 129);
     private static final Color HEADER_TEXT_COLOR = Color.WHITE;
     private static final Color GRID_COLOR = new Color(226, 232, 240);
     private static final Color ALTERNATE_ROW_COLOR = new Color(247, 249, 252);

@@ -27,7 +27,7 @@ public class StockManagementPanel extends JPanel {
     private JLabel stockCountLabel;
 
     private static final Color PRIMARY_COLOR =
-            new Color(37, 99, 235);
+            new Color(63, 116, 236);
 
     private static final Color BACKGROUND_COLOR =
             new Color(245, 247, 251);
@@ -42,7 +42,7 @@ public class StockManagementPanel extends JPanel {
             new Color(226, 232, 240);
 
     private static final Color HEADER_COLOR =
-            new Color(35, 55, 90);
+            new Color(29, 63, 129);
 
     private static final Color SUCCESS_COLOR =
             new Color(22, 163, 74);
@@ -125,10 +125,10 @@ public class StockManagementPanel extends JPanel {
                 "Search by code, product, brand, category or size");
 
         JButton searchButton = createButton(
-                "Search", PRIMARY_COLOR, 100);
+                "⌕", PRIMARY_COLOR, 60);
 
         JButton refreshButton = createButton(
-                "Refresh", new Color(71, 85, 105), 105);
+                "↻",  new Color(99,102,241), 60);
 
         searchButton.addActionListener(e -> searchStock());
 
@@ -143,8 +143,8 @@ public class StockManagementPanel extends JPanel {
         searchPanel.add(searchButton);
         searchPanel.add(refreshButton);
 
-        headerPanel.add(titlePanel, BorderLayout.NORTH);
-        headerPanel.add(searchPanel, BorderLayout.CENTER);
+        headerPanel.add(titlePanel, BorderLayout.WEST);
+        headerPanel.add(searchPanel, BorderLayout.EAST);
 
         add(headerPanel, BorderLayout.NORTH);
     }

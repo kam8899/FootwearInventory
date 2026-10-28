@@ -37,9 +37,9 @@ public class BrandsManagementPanel extends JPanel {
     private final Color TEXT_COLOR = new Color(31, 41, 55);
     private final Color MUTED_COLOR = new Color(107, 114, 128);
     private final Color BORDER_COLOR = new Color(226, 232, 240);
-    private final Color HEADER_COLOR = new Color(29, 63, 129);
-    private final Color SUCCESS_COLOR = new Color(38, 165, 85);
-    private final Color DANGER_COLOR = new Color(220, 53, 69);
+    private final Color HEADER_COLOR = new Color(35, 55, 90);
+    private final Color SUCCESS_COLOR = new Color(22, 163, 74);
+    private final Color DANGER_COLOR = new Color(239, 68, 68);
 
     public BrandsManagementPanel() {
         brandService = new BrandService();
@@ -62,7 +62,7 @@ public class BrandsManagementPanel extends JPanel {
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("Brands Management");
+        JLabel titleLabel = new JLabel("\uD83D\uDC5F Brands Management");
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 27));
         titleLabel.setForeground(TEXT_COLOR);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -76,50 +76,6 @@ public class BrandsManagementPanel extends JPanel {
         titlePanel.add(titleLabel);
         titlePanel.add(Box.createVerticalStrut(6));
         titlePanel.add(subtitleLabel);
-
-        // Action Buttons
-        JPanel actionsPanel =
-                new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        actionsPanel.setOpaque(false);
-
-        JButton refreshButton =
-                createActionButton("↻", new Color(71, 85, 105));
-
-        JButton editButton =
-                createActionButton("✎", new Color(245, 158, 11));
-
-        JButton addButton =
-                createActionButton("+", new Color(22, 163, 74));
-
-        JButton deactivateButton =
-                createActionButton("🚫", DANGER_COLOR);
-
-        refreshButton.setToolTipText("Refresh");
-        editButton.setToolTipText("Edit Brand");
-        addButton.setToolTipText("Add Brand");
-        deactivateButton.setToolTipText("Deactivate");
-
-        actionsPanel.add(refreshButton);
-        actionsPanel.add(editButton);
-        actionsPanel.add(addButton);
-        actionsPanel.add(deactivateButton);
-
-        headerPanel.add(titleLabel, BorderLayout.WEST);
-        headerPanel.add(actionsPanel, BorderLayout.EAST);
-
-        add(headerPanel, BorderLayout.NORTH);
-
-        addButton.addActionListener(e -> addBrand());
-        editButton.addActionListener(e -> editBrand());
-        deactivateButton.addActionListener(e -> deactivateBrand());
-        refreshButton.addActionListener(e -> {
-            searchField.setText("");
-
-
-
-            loadBrands();
-
-        });
 
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 9, 5));
         searchPanel.setOpaque(false);
@@ -136,22 +92,29 @@ public class BrandsManagementPanel extends JPanel {
         ));
         searchField.setToolTipText("Search by brand name");
 
-        searchButton = createActionButton("🔍", PRIMARY_COLOR);
+        searchButton = createButton("⌕", PRIMARY_COLOR);
+        searchButton.setToolTipText("search");
 
-        // searchButton = createButton("Search", PRIMARY_COLOR);
-        searchButton.setPreferredSize(new Dimension(100, 39));
+        searchButton.setPreferredSize(new Dimension(60, 39));
         searchButton.addActionListener(e -> searchBrands());
 
+        refreshButton = createButton("↻",  new Color(99,102,241));
+        refreshButton.setToolTipText("Refresh");
 
+        refreshButton.setPreferredSize(new Dimension(60, 39));
+        refreshButton.addActionListener(e -> {
+            searchField.setText("");
+            loadBrands();
+        });
 
         searchField.addActionListener(e -> searchBrands());
 
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
-        //  searchPanel.add(refreshButton);
+        searchPanel.add(refreshButton);
 
-        headerPanel.add(titlePanel, BorderLayout.NORTH);
-        headerPanel.add(searchPanel, BorderLayout.CENTER);
+        headerPanel.add(titlePanel, BorderLayout.WEST);
+        headerPanel.add(searchPanel, BorderLayout.EAST);
 
         add(headerPanel, BorderLayout.NORTH);
     }
@@ -167,11 +130,27 @@ public class BrandsManagementPanel extends JPanel {
                 new EmptyBorder(12, 14, 12, 14)
         ));
 
+        JPanel leftToolbar = new JPanel(
+                new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftToolbar.setOpaque(false);
+
+        addButton = createButton("＋ Add Category", new Color(16,185,129));
+        editButton = createButton("✎ Edit Category", new Color(59,130,246));
+        deactivateButton = createButton("✖ Deactivate", DANGER_COLOR);
+
+        addButton.addActionListener(e -> addBrand());
+        editButton.addActionListener(e -> editBrand());
+        deactivateButton.addActionListener(e -> deactivateBrand());
+
+        leftToolbar.add(addButton);
+        leftToolbar.add(editButton);
+        leftToolbar.add(deactivateButton);
+
         brandCountLabel = new JLabel("0 brands");
         brandCountLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         brandCountLabel.setForeground(MUTED_COLOR);
 
-        // toolbar.add(leftToolbar, BorderLayout.WEST);
+        toolbar.add(leftToolbar, BorderLayout.WEST);
         toolbar.add(brandCountLabel, BorderLayout.EAST);
 
         createTable();
@@ -219,7 +198,7 @@ public class BrandsManagementPanel extends JPanel {
         brandTable.setFocusable(true);
 
         JTableHeader tableHeader = brandTable.getTableHeader();
-        tableHeader.setFont(new Font("SansSerif",Font.BOLD, 15));
+        tableHeader.setFont(new Font("SansSerif", Font.BOLD, 13));
         tableHeader.setBackground(HEADER_COLOR);
         tableHeader.setForeground(Color.WHITE);
         tableHeader.setPreferredSize(new Dimension(0, 47));
@@ -262,123 +241,34 @@ public class BrandsManagementPanel extends JPanel {
         brandTable.setGridColor(new Color(238, 242, 247));
     }
 
-   /* private JButton createActionButton(
-            String text,
-            Color backgroundColor) {
-
+    private JButton createButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
 
-        button.setFont(
-                new Font("Segoe UI Symbol",
-                        Font.BOLD,
-                        18));
-
+        button.setFont(new Font("SansSerif", Font.BOLD, 12));
         button.setForeground(Color.WHITE);
         button.setBackground(backgroundColor);
-
         button.setFocusPainted(false);
+        button.setOpaque(true);
         button.setBorderPainted(false);
         button.setContentAreaFilled(true);
-        button.setOpaque(true);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(135, 39));
+        button.setBorder(new EmptyBorder(8, 15, 8, 15));
 
-        button.setCursor(
-                Cursor.getPredefinedCursor(
-                        Cursor.HAND_CURSOR));
+        Color originalColor = backgroundColor;
+        Color hoverColor = backgroundColor.darker();
 
-        button.setPreferredSize(
-                new Dimension(55, 42));
-
-        return button;
-    }
-
-    */
-
-    private JButton createActionButton(
-            final String text,
-            final Color background) {
-
-        JButton button = new JButton(text) {
-
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            protected void paintComponent(Graphics g) {
-
-                Graphics2D g2 =
-                        (Graphics2D) g.create();
-
-                g2.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
-
-                Color buttonColor = background;
-
-                if (getModel().isPressed()) {
-                    buttonColor = background.darker();
-                } else if (getModel().isRollover()) {
-                    buttonColor = background.brighter();
-                }
-
-                // Draw rounded button background.
-                g2.setColor(buttonColor);
-                g2.fillRoundRect(
-                        0,
-                        0,
-                        getWidth(),
-                        getHeight(),
-                        10,
-                        10);
-
-                // Draw button text.
-                g2.setFont(getFont());
-                g2.setColor(getForeground());
-
-                FontMetrics metrics =
-                        g2.getFontMetrics();
-
-                int textX = (getWidth()
-                        - metrics.stringWidth(text)) / 2;
-
-                int textY = (getHeight()
-                        - metrics.getHeight()) / 2
-                        + metrics.getAscent();
-
-                g2.drawString(text, textX, textY);
-
-                g2.dispose();
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                button.setBackground(hoverColor);
             }
 
             @Override
-            public boolean isContentAreaFilled() {
-                return false;
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                button.setBackground(originalColor);
             }
-        };
-
-        button.setText(text);
-        button.setFont(
-                new Font("SansSerif", Font.BOLD, 13));
-        button.setForeground(Color.WHITE);
-        button.setBackground(background);
-
-        button.setPreferredSize(
-                new Dimension(50, 38));
-        button.setMinimumSize(
-                new Dimension(50, 38));
-
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
-        button.setIcon(null);
-
-        button.setHorizontalAlignment(
-                SwingConstants.CENTER);
-        button.setHorizontalTextPosition(
-                SwingConstants.CENTER);
-        button.setVerticalAlignment(
-                SwingConstants.CENTER);
-
-        button.setCursor(
-                Cursor.getPredefinedCursor(
-                        Cursor.HAND_CURSOR));
+        });
 
         return button;
     }

@@ -132,7 +132,8 @@ public class DashboardFrame extends JFrame {
                 new BoxLayout(brandPanel, BoxLayout.Y_AXIS));
         brandPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel brandIcon = new JLabel("\u25C8");
+        //JLabel brandIcon = new JLabel("\u25C8");
+        JLabel brandIcon = new JLabel();
         brandIcon.setForeground(new Color(125, 170, 255));
         brandIcon.setFont(
                 new Font("SansSerif", Font.BOLD, 27));
@@ -343,7 +344,7 @@ public class DashboardFrame extends JFrame {
 
         // Personalized greeting
         JLabel greetingLabel =
-                new JLabel(getGreeting() + ", Kamlesh!");
+                new JLabel(getGreeting() + ", Snehal!");
 
         greetingLabel.setFont(
                 new Font("SansSerif", Font.BOLD, 17));

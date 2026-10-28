@@ -8,12 +8,12 @@ import java.sql.SQLException;
 public class DatabaseConnection {
 
     private static final String URL =
-            "jdbc:postgresql://localhost:5432/footwear_inventory";
+            "jdbc:postgresql://localhost:5433/footwear_inventory";
 
     private static final String USER = "postgres";
 
     private static final String PASSWORD =
-            System.getenv("FOOTWEAR_DB_PASSWORD");
+            "Dipa@9511";
 
     public static Connection getConnection() throws SQLException {
         if (PASSWORD == null || PASSWORD.isBlank()) {

@@ -73,7 +73,9 @@ public class DashboardFrame extends JFrame {
     private DashboardChartPanel salesLastSevenDaysChart;
 
     private JButton selectedNavigationButton;
-
+    private JButton dashboardButton;
+    private JButton productsButton;
+    private JButton stockButton;
     // =========================================================
     // CONSTRUCTOR
     // =========================================================
@@ -160,11 +162,11 @@ public class DashboardFrame extends JFrame {
         sidebar.add(brandPanel);
         sidebar.add(Box.createVerticalStrut(35));
 
-        addNavigationButton(
+        dashboardButton = addNavigationButton(
                 sidebar, "\u2302", "Dashboard",
                 this::showDashboard);
 
-        addNavigationButton(
+        productsButton = addNavigationButton(
                 sidebar, "\u25A3", "Products",
                 this::showProducts);
 
@@ -176,7 +178,7 @@ public class DashboardFrame extends JFrame {
                 sidebar, "\u25A6", "Categories",
                 this::showCategories);
 
-        addNavigationButton(
+        stockButton = addNavigationButton(
                 sidebar, "\u25CE", "Stock Management",
                 this::showStock);
 
@@ -217,7 +219,7 @@ public class DashboardFrame extends JFrame {
         add(sidebar, BorderLayout.WEST);
     }
 
-    private void addNavigationButton(
+    private JButton addNavigationButton(
             JPanel sidebar,
             String icon,
             String text,
@@ -294,6 +296,28 @@ public class DashboardFrame extends JFrame {
             button.setBackground(SELECTED_COLOR);
             button.setForeground(Color.WHITE);
         }
+        sidebar.add(button);
+
+        return button;
+    }
+    private void selectNavigationButton(JButton button) {
+
+        if (selectedNavigationButton != null) {
+
+            selectedNavigationButton.setBackground(
+                    SIDEBAR_COLOR);
+
+            selectedNavigationButton.setForeground(
+                    new Color(229, 237, 250));
+        }
+
+        selectedNavigationButton = button;
+
+        selectedNavigationButton.setBackground(
+                SELECTED_COLOR);
+
+        selectedNavigationButton.setForeground(
+                Color.WHITE);
     }
 
     // =========================================================
@@ -569,7 +593,10 @@ public class DashboardFrame extends JFrame {
                         new Color(37, 99, 235));
 
         manageProductsButton.addActionListener(
-                e -> showProducts());
+                e -> {
+                    showProducts();
+                    selectNavigationButton(productsButton);
+                });
 
         JButton manageStockButton =
                 createActionButton(
@@ -578,7 +605,12 @@ public class DashboardFrame extends JFrame {
                         new Color(105, 76, 235));
 
         manageStockButton.addActionListener(
-                e -> showStock());
+                e ->
+                {
+                    showStock();
+                    selectNavigationButton(stockButton);
+
+                });
 
         actionsRow.add(manageProductsButton);
         actionsRow.add(manageStockButton);

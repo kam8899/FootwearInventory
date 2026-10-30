@@ -171,10 +171,14 @@ public class BrandsManagementPanel extends JPanel {
 
         add(contentPanel, BorderLayout.CENTER);
     }
+    String[] columns = {
+            "Brand ID",
+            "Brand Name",
+            "Status"
+    };
 
     private void createTable() {
-        tableModel = new DefaultTableModel(
-                new Object[]{"Brand ID", "Brand Name", "Status"}, 0) {
+        tableModel = new DefaultTableModel(columns, 0){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -189,13 +193,13 @@ public class BrandsManagementPanel extends JPanel {
         brandTable.setRowHeight(43);
         brandTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         brandTable.setShowGrid(false);
-        brandTable.setIntercellSpacing(new Dimension(0, 0));
+        brandTable.setFocusable(false);
+        brandTable.setIntercellSpacing(new Dimension(0, 1));
         brandTable.setFillsViewportHeight(true);
         brandTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         brandTable.setSelectionBackground(new Color(219, 234, 254));
         brandTable.setSelectionForeground(TEXT_COLOR);
         brandTable.setRowMargin(0);
-        brandTable.setFocusable(true);
 
         JTableHeader tableHeader = brandTable.getTableHeader();
         tableHeader.setFont(new Font("SansSerif", Font.BOLD, 13));

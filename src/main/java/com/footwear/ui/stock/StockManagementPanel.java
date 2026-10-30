@@ -205,6 +205,7 @@ public class StockManagementPanel extends JPanel {
                 tableModel);
 
         stockTable.setRowSorter(sorter);
+        stockTable.setFocusable(false);
 
         configureTableHeader();
         configureTableColumns();

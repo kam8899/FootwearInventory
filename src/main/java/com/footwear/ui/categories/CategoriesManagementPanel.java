@@ -104,6 +104,7 @@ public class CategoriesManagementPanel extends JPanel {
                 new Color(219, 234, 254));
         categoryTable.setSelectionForeground(TEXT_COLOR);
         categoryTable.setRowMargin(0);
+        categoryTable.setFocusable(false);
 
         JTableHeader header = categoryTable.getTableHeader();
 

@@ -4,6 +4,7 @@ package com.footwear.ui.reports;
 import com.footwear.service.ReportsService;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
@@ -178,7 +179,28 @@ public class ReportsPanel extends JPanel {
         titlePanel.add(Box.createVerticalStrut(5));
         titlePanel.add(subtitle);
 
+        JPanel leftToolbar = new JPanel(
+                new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftToolbar.setOpaque(false);
+
+        JButton refreshButton = createButton(
+                "↻ Refresh",  new Color(99,102,241));
+
+        JButton exportButton = createButton(
+                "Export CSV", new Color(22, 163, 74)
+        );
+
+
+        refreshButton.addActionListener(e -> loadReports());
+        exportButton.addActionListener(e -> exportCurrentReport());
+
+        leftToolbar.add(refreshButton);
+        leftToolbar.add(exportButton);
+
+
         panel.add(titlePanel, BorderLayout.WEST);
+        panel.add(leftToolbar, BorderLayout.EAST);
+
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
 
         return panel;
@@ -208,36 +230,40 @@ public class ReportsPanel extends JPanel {
         toolbar.add(toLabel);
         toolbar.add(endDateField);
 
-        JButton refreshButton = createActionButton(
-                "Refresh Reports", ACCENT_BLUE
-        );
-
-        JButton exportButton = createActionButton(
-                "Export CSV", new Color(22, 163, 74)
-        );
-
-        refreshButton.addActionListener(e -> loadReports());
-        exportButton.addActionListener(e -> exportCurrentReport());
-
-        toolbar.add(refreshButton);
-        toolbar.add(exportButton);
-
         panel.add(toolbar, BorderLayout.NORTH);
         panel.add(tabbedPane, BorderLayout.CENTER);
 
         return panel;
     }
 
-    private JButton createActionButton(String text, Color background) {
+    private JButton createButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
 
         button.setFont(new Font("SansSerif", Font.BOLD, 12));
         button.setForeground(Color.WHITE);
-        button.setBackground(background);
+        button.setBackground(backgroundColor);
         button.setFocusPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createEmptyBorder(9, 14, 9, 14));
         button.setOpaque(true);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(true);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(135, 39));
+        button.setBorder(new EmptyBorder(8, 15, 8, 15));
+
+        Color originalColor = backgroundColor;
+        Color hoverColor = backgroundColor.darker();
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                button.setBackground(hoverColor);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                button.setBackground(originalColor);
+            }
+        });
 
         return button;
     }

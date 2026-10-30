@@ -66,21 +66,31 @@ public class ProductManagementPanel extends JPanel {
 
         header.add(subtitle);
 
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setOpaque(false);
+
+        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        toolbar.setBackground(Color.WHITE);
+        toolbar.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(225, 231, 239)),
+                BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
+
         JButton addButton = createActionButton("＋ Add Category", new Color(16,185,129));
         addButton.setToolTipText("Add Product");
 
         JButton editButton = createActionButton("✎ Edit Category", new Color(59,130,246));
         editButton.setToolTipText("Edit Product");
 
-        JPanel actions = new JPanel(
-                new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        actions.setOpaque(false);
+//        JPanel actions = new JPanel(
+//                new FlowLayout(FlowLayout.RIGHT, 10, 0));
+//        actions.setOpaque(false);
 
-        actions.add(addButton);
-        actions.add(editButton);
+        toolbar.add(addButton);
+        toolbar.add(editButton);
 
         header.add(title, BorderLayout.NORTH);
-        header.add(actions, BorderLayout.SOUTH);
+        header.add(toolbar, BorderLayout.SOUTH);
 
         // Product table columns
         String[] columns = {

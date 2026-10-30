@@ -196,25 +196,33 @@ public class DashboardFrame extends JFrame {
 
         sidebar.add(Box.createVerticalGlue());
 
-        JPanel footerLine = new JPanel();
-        footerLine.setBackground(new Color(57, 74, 108));
-        footerLine.setMaximumSize(
-                new Dimension(Integer.MAX_VALUE, 1));
-        footerLine.setPreferredSize(new Dimension(190, 1));
-        footerLine.setAlignmentX(Component.LEFT_ALIGNMENT);
+        //JButton aboutButton = new JButton("❓  About Us");
+        JButton aboutButton = new JButton("ⓘ  About Us");
+        aboutButton.setFont(FONT);
+        aboutButton.setForeground(Color.WHITE);
+        aboutButton.setBackground(SIDEBAR_COLOR);
 
-        sidebar.add(footerLine);
-        sidebar.add(Box.createVerticalStrut(14));
+        aboutButton.setHorizontalAlignment(
+                SwingConstants.LEFT);
 
-        JLabel footer =
-                new JLabel("Footwear Inventory  \u2022  v1.0");
+        aboutButton.setBorder(
+                new EmptyBorder(12, 14, 12, 8));
 
-        footer.setForeground(new Color(174, 190, 216));
-        footer.setFont(
-                new Font("SansSerif", Font.PLAIN, 10));
-        footer.setAlignmentX(Component.LEFT_ALIGNMENT);
+        aboutButton.setFocusPainted(false);
+        aboutButton.setBorderPainted(false);
+        aboutButton.setContentAreaFilled(true);
+        aboutButton.setOpaque(true);
 
-        sidebar.add(footer);
+        aboutButton.setCursor(
+                new Cursor(Cursor.HAND_CURSOR));
+
+        aboutButton.addActionListener(
+                e -> showAboutDialog());
+
+        sidebar.add(new JSeparator());
+        sidebar.add(Box.createVerticalStrut(5));
+        sidebar.add(aboutButton);
+
 
         add(sidebar, BorderLayout.WEST);
     }
@@ -318,6 +326,34 @@ public class DashboardFrame extends JFrame {
 
         selectedNavigationButton.setForeground(
                 Color.WHITE);
+    }
+    private void showAboutDialog() {
+
+        JOptionPane.showMessageDialog(
+                this,
+                """
+                KSTech Innovations presents,
+                
+                Footwear Inventory Management System
+    
+                Version : 3.0
+    
+                Developed By:
+                kamlesh Bankar
+    
+                Features:
+                • Brand Management
+                • Product Management
+                • Category Management
+                • Stock Management
+                • Sales Management
+                • Reports
+    
+                © 2026 All Rights Reserved
+                """,
+                "About Us",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     // =========================================================

@@ -1,5 +1,5 @@
 
-        package com.footwear.ui.categories;
+package com.footwear.ui.categories;
 
 import com.footwear.model.Category;
 import com.footwear.service.CategoryService;
@@ -107,7 +107,7 @@ public class CategoriesManagementPanel extends JPanel {
 
         JTableHeader header = categoryTable.getTableHeader();
 
-        header.setFont(new Font("SansSerif", Font.BOLD, 15));
+        header.setFont(new Font("SansSerif", Font.BOLD, 13));
         header.setBackground(HEADER_COLOR);
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(0, 47));

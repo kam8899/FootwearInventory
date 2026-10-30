@@ -1,5 +1,5 @@
 
-        package com.footwear.ui.reports;
+package com.footwear.ui.reports;
 
 import com.footwear.service.ReportsService;
 
@@ -70,7 +70,7 @@ public class ReportsPanel extends JPanel {
         lowStockTable = createTable(lowStockModel);
 
         tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(new Font("SansSerif", Font.BOLD, 15));
+        tabbedPane.setFont(new Font("SansSerif", Font.BOLD, 13));
         tabbedPane.setForeground(HEADER_COLOR);
         tabbedPane.setBackground(Color.WHITE);
         tabbedPane.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
@@ -160,9 +160,9 @@ public class ReportsPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
 
-        JLabel title = new JLabel("Inventory Reports");
-        title.setFont(new Font("SansSerif", Font.BOLD, 24));
-        title.setForeground(HEADER_COLOR);
+        JLabel title = new JLabel("\uD83D\uDCC8 Inventory Reports");
+        title.setFont(new Font("SansSerif", Font.BOLD, 26));
+        title.setForeground(new Color(35, 45, 65));
 
         JLabel subtitle = new JLabel(
                 "View stock levels, sales history and low-stock items"

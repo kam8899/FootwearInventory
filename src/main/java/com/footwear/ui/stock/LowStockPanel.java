@@ -1,5 +1,5 @@
 
-        package com.footwear.ui.stock;
+package com.footwear.ui.stock;
 
 import com.footwear.model.ProductSize;
 import com.footwear.service.LowStockService;
@@ -67,7 +67,7 @@ public class LowStockPanel extends JPanel {
         titlePanel.setLayout(
                 new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
 
-        JLabel titleLabel = new JLabel("Low-Stock Alerts");
+        JLabel titleLabel = new JLabel("⚠\uFE0F Low-Stock Alerts");
         titleLabel.setFont(
                 new Font("SansSerif", Font.BOLD, 26));
         titleLabel.setForeground(new Color(45, 52, 65));

@@ -1,5 +1,5 @@
 
-        package com.footwear.ui.stock;
+package com.footwear.ui.stock;
 
 import com.footwear.model.ProductSize;
 import com.footwear.service.ProductSizeService;
@@ -84,7 +84,7 @@ public class StockManagementPanel extends JPanel {
         titlePanel.setOpaque(false);
 
         JLabel titleLabel =
-                new JLabel("Stock Management");
+                new JLabel("\uD83D\uDCCA Stock Management");
 
         titleLabel.setFont(
                 new Font("SansSerif", Font.BOLD, 27));

@@ -53,36 +53,34 @@ public class ProductManagementPanel extends JPanel {
                 new BorderLayout(10, 10));
         header.setOpaque(false);
 
-        JLabel title = new JLabel("Product Management");
+        JLabel title = new JLabel("\uD83D\uDCE6 Product Management");
         title.setFont(
                 new Font("SansSerif", Font.BOLD, 26));
         title.setForeground(new Color(35, 45, 65));
 
-        JButton addButton = createActionButton(
-                "➕",
-                new Color(35, 139, 85));
+        JLabel subtitle = new JLabel(
+                "Manage and organize your footwear products in one place"
+        );
+        subtitle.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        subtitle.setForeground(new Color(112, 122, 140));
+
+        header.add(subtitle);
+
+        JButton addButton = createActionButton("＋ Add Category", new Color(16,185,129));
         addButton.setToolTipText("Add Product");
 
-        JButton refreshButton = createActionButton(
-                "🔄",
-                new Color(71, 85, 105));
-        refreshButton.setToolTipText("Refresh");
-
-        JButton editButton = createActionButton(
-                "✎",
-                new Color(63, 116, 236));
-        editButton.setToolTipText("Edit");
+        JButton editButton = createActionButton("✎ Edit Category", new Color(59,130,246));
+        editButton.setToolTipText("Edit Product");
 
         JPanel actions = new JPanel(
                 new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actions.setOpaque(false);
 
-        actions.add(refreshButton);
-        actions.add(editButton);
         actions.add(addButton);
+        actions.add(editButton);
 
-        header.add(title, BorderLayout.WEST);
-        header.add(actions, BorderLayout.EAST);
+        header.add(title, BorderLayout.NORTH);
+        header.add(actions, BorderLayout.SOUTH);
 
         // Product table columns
         String[] columns = {
@@ -159,11 +157,13 @@ public class ProductManagementPanel extends JPanel {
         searchField.setPreferredSize(
                 new Dimension(250, 36));
 
-        JButton searchButton = createActionButton(
-                "🔍",
-                new Color(63, 116, 236));
+        JButton searchButton = createActionButton("⌕",new Color(63, 116, 236));
         searchButton.setToolTipText("Search Product");
+        searchButton.setPreferredSize(new Dimension(60, 39));
 
+        JButton refreshButton = createActionButton("↻",  new Color(99,102,241));
+        refreshButton.setToolTipText("Refresh");
+        refreshButton.setPreferredSize(new Dimension(60, 39));
 
         JPanel searchPanel = new JPanel(
                 new FlowLayout(FlowLayout.LEFT, 8, 0));
@@ -177,14 +177,15 @@ public class ProductManagementPanel extends JPanel {
         searchPanel.add(searchLabel);
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
+        searchPanel.add(refreshButton);
 
         // Top section
         JPanel top = new JPanel(
                 new BorderLayout(0, 15));
         top.setOpaque(false);
 
-        top.add(header, BorderLayout.NORTH);
-        top.add(searchPanel, BorderLayout.CENTER);
+        top.add(header, BorderLayout.WEST);
+        top.add(searchPanel, BorderLayout.EAST);
 
         add(top, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
@@ -385,92 +386,34 @@ public class ProductManagementPanel extends JPanel {
      * Creates a button with a custom-painted background
      * and explicitly rendered text.
      */
-    private JButton createActionButton(
-            final String text,
-            final Color background) {
+    private JButton createActionButton(String text, Color backgroundColor) {
+        JButton button = new JButton(text);
 
-        JButton button = new JButton(text) {
-
-            @Override
-            protected void paintComponent(Graphics g) {
-
-                Graphics2D g2 =
-                        (Graphics2D) g.create();
-
-                g2.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
-
-                Color buttonColor = background;
-
-                if (getModel().isPressed()) {
-                    buttonColor = background.darker();
-                } else if (getModel().isRollover()) {
-                    buttonColor = background.brighter();
-                }
-
-                // Draw rounded button background.
-                g2.setColor(buttonColor);
-                g2.fillRoundRect(
-                        0,
-                        0,
-                        getWidth(),
-                        getHeight(),
-                        10,
-                        10);
-
-                // Draw button text.
-                g2.setFont(getFont());
-                g2.setColor(getForeground());
-
-                FontMetrics metrics =
-                        g2.getFontMetrics();
-
-                int textX = (getWidth()
-                        - metrics.stringWidth(text)) / 2;
-
-                int textY = (getHeight()
-                        - metrics.getHeight()) / 2
-                        + metrics.getAscent();
-
-                g2.drawString(text, textX, textY);
-
-                g2.dispose();
-            }
-
-            @Override
-            public boolean isContentAreaFilled() {
-                return false;
-            }
-        };
-
-        button.setText(text);
-        button.setFont(
-                new Font("SansSerif", Font.BOLD, 13));
+        button.setFont(new Font("SansSerif", Font.BOLD, 12));
         button.setForeground(Color.WHITE);
-        button.setBackground(background);
-
-        button.setPreferredSize(
-                new Dimension(50, 38));
-        button.setMinimumSize(
-                new Dimension(50, 38));
-
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
+        button.setBackground(backgroundColor);
         button.setFocusPainted(false);
-        button.setIcon(null);
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(true);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(135, 39));
+        button.setBorder(new EmptyBorder(8, 15, 8, 15));
 
-        button.setHorizontalAlignment(
-                SwingConstants.CENTER);
-        button.setHorizontalTextPosition(
-                SwingConstants.CENTER);
-        button.setVerticalAlignment(
-                SwingConstants.CENTER);
+        Color originalColor = backgroundColor;
+        Color hoverColor = backgroundColor.darker();
 
-        button.setCursor(
-                Cursor.getPredefinedCursor(
-                        Cursor.HAND_CURSOR));
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                button.setBackground(hoverColor);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                button.setBackground(originalColor);
+            }
+        });
 
         return button;
     }

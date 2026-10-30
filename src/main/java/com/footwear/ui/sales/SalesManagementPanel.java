@@ -52,7 +52,7 @@ public class SalesManagementPanel extends JPanel {
     }
 
     private void createHeader() {
-        JLabel title = new JLabel("Sales Management");
+        JLabel title = new JLabel("\uD83D\uDED2 Sales Management");
         title.setFont(new Font("SansSerif", Font.BOLD, 26));
         title.setForeground(TEXT_COLOR);
 
@@ -129,11 +129,11 @@ public class SalesManagementPanel extends JPanel {
         availableStockLabel.setBorder(new EmptyBorder(9, 12, 9, 12));
 
         JButton recordButton = createButton(
-                "Record Sale", SUCCESS_COLOR
+                "Record Sale",new Color(63, 116, 236)
         );
 
         JButton refreshButton = createButton(
-                "Refresh", new Color(89, 101, 120)
+                "Refresh",  new Color(99,102,241)
         );
 
         recordButton.addActionListener(e -> recordSale());
@@ -231,7 +231,7 @@ public class SalesManagementPanel extends JPanel {
         // Configure the table header explicitly for consistent rendering
         // across Windows and macOS Look and Feel implementations.
         JTableHeader header = salesTable.getTableHeader();
-        header.setFont(new Font("SansSerif", Font.BOLD, 15));
+        header.setFont(new Font("SansSerif", Font.BOLD, 12));
         header.setBackground(HEADER_COLOR);
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(0, 43));
